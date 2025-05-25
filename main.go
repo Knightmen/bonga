@@ -38,7 +38,7 @@ func main() {
 	// Health check endpoint
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
-			"status": "BONGA! JAWAD! BONGA!",
+			"status": "BONGA! JADU! BONGA!",
 		})
 	})
 
