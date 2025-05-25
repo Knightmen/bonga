@@ -1,0 +1,35 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup SSH key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+
+      - name: Deploy and Run Go App
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+            set -e  # Stop on error
+            cd /var/www/bonga-app/bonga
+
+            echo "Pulling latest changes..."
+            git pull origin main
+
+            echo "Tidying Go modules..."
+            go mod tidy
+
+            echo "Running Go app..."
+            nohup go run main.go > app.log 2>&1 &
+          EOF
