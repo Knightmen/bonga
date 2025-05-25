@@ -33,7 +33,11 @@ jobs:
             echo "Building Go app..."
             go build -o bonga main.go
 
+            echo "Stopping any existing Go app processes..."
+            pkill -f ./bonga || true
+
             echo "Running Go app..."
             nohup ./bonga > app.log 2>&1 &
 
+            echo "Bonga deployed successfully!"
           EOF
