@@ -30,6 +30,10 @@ jobs:
             echo "Tidying Go modules..."
             go mod tidy
 
+            echo "Building Go app..."
+            go build -o bonga main.go
+
             echo "Running Go app..."
-            nohup go run main.go > app.log 2>&1 &
+            nohup ./bonga > app.log 2>&1 &
+
           EOF
