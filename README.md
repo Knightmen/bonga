@@ -14,9 +14,6 @@ DB_PORT=5432
 DB_SSLMODE=require
 ```
 
-curl -X 'GET' \
-  'http://52.64.139.255:8080/api/v1/products' \
-  -H 'accept: application/json'
 
 2. Install dependencies:
 ```bash
