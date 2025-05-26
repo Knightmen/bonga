@@ -6,10 +6,10 @@ A RESTful API server built with Go, Gin, GORM, and Swagger documentation.
 
 1. Create a `.env` file in the root directory with the following content:
 ```env
-DB_HOST=your-supabase-host
-DB_USER=your-supabase-user
-DB_PASSWORD=your-supabase-password
-DB_NAME=your-supabase-dbname
+DB_HOST=your-postgresql-host
+DB_USER=your-postgresql-user
+DB_PASSWORD=your-postgresql-password
+DB_NAME=your-postgresql-dbname
 DB_PORT=5432
 DB_SSLMODE=require
 ```
