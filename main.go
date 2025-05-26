@@ -9,7 +9,7 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"go-server/config"
-	_ "go-server/docs" // This is required for swagger
+	"go-server/docs"
 	"go-server/handlers"
 	"go-server/models"
 )
@@ -25,6 +25,9 @@ func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Fatal("Error loading .env file")
 	}
+
+	// Update Swagger host from environment
+	docs.SwaggerInfo.Host = config.GetSwaggerHost()
 
 	// Initialize database
 	db := config.ConnectDB()

@@ -38,3 +38,5 @@ http://localhost:8080/swagger/index.html
 - POST /api/v1/products - Create a new product
 - PUT /api/v1/products/:id - Update a product
 - DELETE /api/v1/products/:id - Delete a product 
+
+## cd /Users/magic-kiri/go/bin/air
