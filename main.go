@@ -4,15 +4,17 @@ import (
 	"log"
 	"net/http"
 
+	"go-server/config"
+	"go-server/docs"
+	"go-server/handlers"
+	"go-server/middleware"
+	"go-server/models"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"go-server/config"
-	"go-server/docs"
-	"go-server/handlers"
-	"go-server/models"
 )
 
 // @title E-commerce API
@@ -34,7 +36,7 @@ func main() {
 	db := config.ConnectDB()
 
 	// Auto migrate the schema
-	db.AutoMigrate(&models.Product{})
+	db.AutoMigrate(&models.Product{}, &models.Resume{})
 
 	// Initialize router
 	r := gin.Default()
@@ -55,8 +57,9 @@ func main() {
 		})
 	})
 
-	// Initialize product handler
+	// Initialize handlers
 	productHandler := &handlers.ProductHandler{DB: db}
+	resumeHandler := handlers.NewResumeHandler(db)
 
 	// Product routes
 	v1 := r.Group("/api/v1")
@@ -68,6 +71,17 @@ func main() {
 			products.POST("", productHandler.CreateProduct)
 			products.PUT("/:id", productHandler.UpdateProduct)
 			products.DELETE("/:id", productHandler.DeleteProduct)
+		}
+
+		// Resume routes with API key authentication
+		resumes := v1.Group("/resume")
+		resumes.Use(middleware.APIKeyAuth())
+		{
+			resumes.GET("", resumeHandler.ListResumes)
+			resumes.POST("", resumeHandler.CreateResume)
+			resumes.GET("/:id", resumeHandler.GetResume)
+			resumes.PUT("/:id", resumeHandler.UpdateResume)
+			resumes.DELETE("/:id", resumeHandler.DeleteResume)
 		}
 	}
 

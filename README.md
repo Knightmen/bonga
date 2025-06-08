@@ -40,3 +40,9 @@ http://localhost:8080/swagger/index.html
 - DELETE /api/v1/products/:id - Delete a product 
 
 ## cd /Users/magic-kiri/go/bin/air
+
+
+## USE this command for generating swagger documentation
+ ~/go/bin/swag init -g main.go
+
+ 

@@ -1,5 +1,17 @@
 basePath: /
 definitions:
+  models.CreateResumeRequest:
+    properties:
+      metadata:
+        $ref: '#/definitions/models.JSONB'
+      raw_text:
+        type: string
+    required:
+    - raw_text
+    type: object
+  models.JSONB:
+    additionalProperties: true
+    type: object
   models.Product:
     description: Product information
     properties:
@@ -24,6 +36,22 @@ definitions:
     required:
     - seller_id
     - title
+    type: object
+  models.Resume:
+    properties:
+      created_at:
+        type: string
+      id:
+        example: 1
+        type: integer
+      metadata:
+        $ref: '#/definitions/models.JSONB'
+      raw_text:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
     type: object
 host: localhost:8080
 info:
@@ -135,6 +163,135 @@ paths:
       summary: Update a product
       tags:
       - products
+  /api/v1/resume:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all resumes
+      parameters:
+      - description: API Key
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Resume'
+            type: array
+      summary: List all resumes
+      tags:
+      - resume
+    post:
+      consumes:
+      - application/json
+      description: Create a new resume with the provided data
+      parameters:
+      - description: API Key
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Resume Data
+        in: body
+        name: resume
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateResumeRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Resume'
+      summary: Create a new resume
+      tags:
+      - resume
+  /api/v1/resume/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a resume by its ID
+      parameters:
+      - description: API Key
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Resume ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      summary: Delete a resume
+      tags:
+      - resume
+    get:
+      consumes:
+      - application/json
+      description: Get a resume by its ID
+      parameters:
+      - description: API Key
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Resume ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Resume'
+      summary: Get a resume by ID
+      tags:
+      - resume
+    put:
+      consumes:
+      - application/json
+      description: Update a resume by its ID
+      parameters:
+      - description: API Key
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Resume ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Resume Data
+        in: body
+        name: resume
+        required: true
+        schema:
+          $ref: '#/definitions/models.Resume'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Resume'
+      summary: Update a resume
+      tags:
+      - resume
 schemes:
 - http
 swagger: "2.0"
