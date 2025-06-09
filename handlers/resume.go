@@ -5,17 +5,28 @@ import (
 	"time"
 
 	"go-server/models"
+	"go-server/services"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
 type ResumeHandler struct {
-	db *gorm.DB
+	db        *gorm.DB
+	s3Service *services.S3Service
 }
 
 func NewResumeHandler(db *gorm.DB) *ResumeHandler {
-	return &ResumeHandler{db: db}
+	s3Service, err := services.NewS3Service()
+	if err != nil {
+		// Log the error but continue without S3 service
+		// You might want to handle this differently based on your requirements
+		return &ResumeHandler{db: db}
+	}
+	return &ResumeHandler{
+		db:        db,
+		s3Service: s3Service,
+	}
 }
 
 // CreateResume godoc
@@ -153,4 +164,41 @@ func (h *ResumeHandler) ListResumes(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, resumes)
+}
+
+// GetSignedURL godoc
+// @Summary Get a presigned URL for uploading a resume
+// @Description Get a presigned URL for uploading a resume to S3
+// @Tags resume
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "API Key"
+// @Param filename query string true "Filename for the resume"
+// @Success 200 {object} map[string]string
+// @Router /api/v1/resume/getSignedUrl [get]
+func (h *ResumeHandler) GetSignedURL(c *gin.Context) {
+	if h.s3Service == nil {
+		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "S3 service is not available"})
+		return
+	}
+
+	filename := c.Query("filename")
+	if filename == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "filename is required"})
+		return
+	}
+
+	key := "resumes/" + filename
+
+	// Get presigned URL
+	url, err := h.s3Service.GetPresignedURL(key)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"url": url,
+		"key": key,
+	})
 } 

@@ -78,6 +78,7 @@ func main() {
 		resumes.Use(middleware.APIKeyAuth())
 		{
 			resumes.GET("", resumeHandler.ListResumes)
+			resumes.GET("/getSignedUrl", resumeHandler.GetSignedURL)
 			resumes.POST("", resumeHandler.CreateResume)
 			resumes.GET("/:id", resumeHandler.GetResume)
 			resumes.PUT("/:id", resumeHandler.UpdateResume)

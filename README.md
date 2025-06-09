@@ -12,8 +12,13 @@ DB_PASSWORD=your-postgresql-password
 DB_NAME=your-postgresql-dbname
 DB_PORT=5432
 DB_SSLMODE=require
-```
 
+# AWS Configuration
+AWS_REGION=your-aws-region
+AWS_ACCESS_KEY_ID=your-aws-access-key
+AWS_SECRET_ACCESS_KEY=your-aws-secret-key
+AWS_S3_BUCKET=your-s3-bucket-name
+```
 
 2. Install dependencies:
 ```bash
@@ -37,12 +42,21 @@ http://localhost:8080/swagger/index.html
 - GET /api/v1/products/:id - Get a specific product
 - POST /api/v1/products - Create a new product
 - PUT /api/v1/products/:id - Update a product
-- DELETE /api/v1/products/:id - Delete a product 
+- DELETE /api/v1/products/:id - Delete a product
+- GET /api/v1/resume/getSignedUrl - Get a presigned URL for uploading a resume to S3 (requires filename query parameter)
 
-## cd /Users/magic-kiri/go/bin/air
+## Development
 
+### Hot Reload
+Use air for hot reloading during development:
+```bash
+cd /Users/magic-kiri/go/bin/air
+```
 
-## USE this command for generating swagger documentation
- ~/go/bin/swag init -g main.go
+### Swagger Documentation
+Generate swagger documentation using:
+```bash
+~/go/bin/swag init -g main.go
+```
 
  

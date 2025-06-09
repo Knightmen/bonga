@@ -245,6 +245,48 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/resume/getSignedUrl": {
+            "get": {
+                "description": "Get a presigned URL for uploading a resume to S3",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "resume"
+                ],
+                "summary": "Get a presigned URL for uploading a resume",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "API Key",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filename for the resume",
+                        "name": "filename",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/resume/{id}": {
             "get": {
                 "description": "Get a resume by its ID",

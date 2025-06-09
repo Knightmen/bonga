@@ -292,6 +292,34 @@ paths:
       summary: Update a resume
       tags:
       - resume
+  /api/v1/resume/getSignedUrl:
+    get:
+      consumes:
+      - application/json
+      description: Get a presigned URL for uploading a resume to S3
+      parameters:
+      - description: API Key
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Filename for the resume
+        in: query
+        name: filename
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a presigned URL for uploading a resume
+      tags:
+      - resume
 schemes:
 - http
 swagger: "2.0"
