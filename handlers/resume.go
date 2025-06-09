@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -70,7 +71,7 @@ func (h *ResumeHandler) CreateResume(c *gin.Context) {
 	httpReq.Header.Set("Authorization", authToken)
 
 	// Make the request
-	client := &http.Client{Timeout: 30 * time.Second}
+	client := &http.Client{Timeout: 40 * time.Second}
 	resp, err := client.Do(httpReq)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to call parse API: %v", err)})
@@ -84,13 +85,31 @@ func (h *ResumeHandler) CreateResume(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read response"})
 		return
 	}
+	// Parse the JSON response
+	var parseResponse struct {
+		Status       string `json:"status"`
+		FileName     string `json:"fileName"`
+		TextContent  string `json:"text_content"`
+	}
+	if err := json.Unmarshal(body, &parseResponse); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse response"})
+		return
+	}
 
-	// Print the response for debugging
-	fmt.Printf("Parse API Response: %s\n", string(body))
+	// Create resume record in database
+	resume := models.Resume{
+		UserID:   "STATIC",
+		RawText:  parseResponse.TextContent,
+		Metadata: models.JSONB{"fileName": parseResponse.FileName},
+	}
+
+	if err := h.db.Create(&resume).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save resume to database"})
+		return
+	}
 
 	// Return the response
 	c.JSON(resp.StatusCode, gin.H{
-		"parse_response": string(body),
 		"status_code": resp.StatusCode,
 	})
 }
