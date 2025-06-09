@@ -18,6 +18,9 @@ AWS_REGION=your-aws-region
 AWS_ACCESS_KEY_ID=your-aws-access-key
 AWS_SECRET_ACCESS_KEY=your-aws-secret-key
 AWS_S3_BUCKET=your-s3-bucket-name
+
+# Resume Parse API Configuration
+PARSE_API_TOKEN=your-parse-api-token
 ```
 
 2. Install dependencies:
@@ -43,7 +46,12 @@ http://localhost:8080/swagger/index.html
 - POST /api/v1/products - Create a new product
 - PUT /api/v1/products/:id - Update a product
 - DELETE /api/v1/products/:id - Delete a product
-- GET /api/v1/resume/getSignedUrl - Get a presigned URL for uploading a resume to S3 (requires filename query parameter)
+- GET /api/v1/resume - List all resumes (requires Authorization header)
+- POST /api/v1/resume - Parse a resume file by calling external service (requires Authorization header and fileName in body)
+- GET /api/v1/resume/:id - Get a specific resume (requires Authorization header)
+- PUT /api/v1/resume/:id - Update a resume (requires Authorization header)
+- DELETE /api/v1/resume/:id - Delete a resume (requires Authorization header)
+- GET /api/v1/resume/getSignedUrl - Get a presigned URL for uploading a resume to S3 (requires filename query parameter and Authorization header)
 
 ## Development
 

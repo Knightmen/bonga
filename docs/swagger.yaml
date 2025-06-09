@@ -1,16 +1,14 @@
 basePath: /
 definitions:
-  models.CreateResumeRequest:
-    properties:
-      metadata:
-        $ref: '#/definitions/models.JSONB'
-      raw_text:
-        type: string
-    required:
-    - raw_text
-    type: object
   models.JSONB:
     additionalProperties: true
+    type: object
+  models.ParseResumeRequest:
+    properties:
+      fileName:
+        type: string
+    required:
+    - fileName
     type: object
   models.Product:
     description: Product information
@@ -189,26 +187,27 @@ paths:
     post:
       consumes:
       - application/json
-      description: Create a new resume with the provided data
+      description: Create a new resume by parsing a file through external service
       parameters:
       - description: API Key
         in: header
         name: Authorization
         required: true
         type: string
-      - description: Resume Data
+      - description: Parse Resume Request
         in: body
-        name: resume
+        name: request
         required: true
         schema:
-          $ref: '#/definitions/models.CreateResumeRequest'
+          $ref: '#/definitions/models.ParseResumeRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/models.Resume'
+            additionalProperties: true
+            type: object
       summary: Create a new resume
       tags:
       - resume

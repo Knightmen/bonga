@@ -1,7 +1,10 @@
 package handlers
 
 import (
+	"fmt"
+	"io"
 	"net/http"
+	"os"
 	"time"
 
 	"go-server/models"
@@ -31,35 +34,65 @@ func NewResumeHandler(db *gorm.DB) *ResumeHandler {
 
 // CreateResume godoc
 // @Summary Create a new resume
-// @Description Create a new resume with the provided data
+// @Description Create a new resume by parsing a file through external service
 // @Tags resume
 // @Accept json
 // @Produce json
 // @Param Authorization header string true "API Key"
-// @Param resume body models.CreateResumeRequest true "Resume Data"
-// @Success 201 {object} models.Resume
+// @Param request body models.ParseResumeRequest true "Parse Resume Request"
+// @Success 201 {object} map[string]interface{}
 // @Router /api/v1/resume [post]
 func (h *ResumeHandler) CreateResume(c *gin.Context) {
-	var request models.CreateResumeRequest
+	var request models.ParseResumeRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	resume := models.Resume{
-		RawText:   request.RawText,
-		Metadata:  request.Metadata,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-		UserID:    "Static",
-	}
-
-	if err := h.db.Create(&resume).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	// Get authorization token from environment
+	authToken := os.Getenv("API_KEY")
+	if authToken == "" {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Parse API token not configured"})
 		return
 	}
 
-	c.JSON(http.StatusCreated, resume)
+	// Make HTTP request to parse endpoint
+	parseURL := fmt.Sprintf("http://localhost:8000/resume/parse?fileName=%s", request.FileName)
+	
+	httpReq, err := http.NewRequest("GET", parseURL, nil)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create request"})
+		return
+	}
+	
+	// Set headers
+	httpReq.Header.Set("Accept", "application/json")
+	httpReq.Header.Set("Authorization", authToken)
+
+	// Make the request
+	client := &http.Client{Timeout: 30 * time.Second}
+	resp, err := client.Do(httpReq)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to call parse API: %v", err)})
+		return
+	}
+	defer resp.Body.Close()
+
+	// Read response body
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read response"})
+		return
+	}
+
+	// Print the response for debugging
+	fmt.Printf("Parse API Response: %s\n", string(body))
+
+	// Return the response
+	c.JSON(resp.StatusCode, gin.H{
+		"parse_response": string(body),
+		"status_code": resp.StatusCode,
+	})
 }
 
 // GetResume godoc

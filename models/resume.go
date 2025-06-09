@@ -20,6 +20,10 @@ type CreateResumeRequest struct {
 	Metadata JSONB  `json:"metadata"`
 }
 
+type ParseResumeRequest struct {
+	FileName string `json:"fileName" binding:"required"`
+}
+
 type JSONB map[string]interface{}
 
 // Value implements the driver.Valuer interface

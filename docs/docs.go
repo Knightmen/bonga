@@ -206,7 +206,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Create a new resume with the provided data",
+                "description": "Create a new resume by parsing a file through external service",
                 "consumes": [
                     "application/json"
                 ],
@@ -226,12 +226,12 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Resume Data",
-                        "name": "resume",
+                        "description": "Parse Resume Request",
+                        "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CreateResumeRequest"
+                            "$ref": "#/definitions/models.ParseResumeRequest"
                         }
                     }
                 ],
@@ -239,7 +239,8 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/models.Resume"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -408,23 +409,20 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "models.CreateResumeRequest": {
-            "type": "object",
-            "required": [
-                "raw_text"
-            ],
-            "properties": {
-                "metadata": {
-                    "$ref": "#/definitions/models.JSONB"
-                },
-                "raw_text": {
-                    "type": "string"
-                }
-            }
-        },
         "models.JSONB": {
             "type": "object",
             "additionalProperties": true
+        },
+        "models.ParseResumeRequest": {
+            "type": "object",
+            "required": [
+                "fileName"
+            ],
+            "properties": {
+                "fileName": {
+                    "type": "string"
+                }
+            }
         },
         "models.Product": {
             "description": "Product information",
