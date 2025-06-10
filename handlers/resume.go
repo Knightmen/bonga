@@ -87,10 +87,9 @@ func (h *ResumeHandler) CreateResume(c *gin.Context) {
 	}
 	// Parse the JSON response
 	var parseResponse struct {
-		Status       string `json:"status"`
-		FileName     string `json:"fileName"`
 		TextContent  string `json:"text_content"`
 		SessionId 	 string `json:"session_id"`
+		Metadata 	 models.JSONB `json:"metadata"`
 	}
 	if err := json.Unmarshal(body, &parseResponse); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse response"})
@@ -101,7 +100,7 @@ func (h *ResumeHandler) CreateResume(c *gin.Context) {
 	resume := models.Resume{
 		UserID:  parseResponse.SessionId,
 		RawText:  parseResponse.TextContent,
-		Metadata: models.JSONB{"fileName": parseResponse.FileName},
+		Metadata: parseResponse.Metadata,
 	}
 	
 	if err := h.db.Create(&resume).Error; err != nil {
@@ -200,24 +199,24 @@ func (h *ResumeHandler) DeleteResume(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
 
-// ListResumes godoc
-// @Summary List all resumes
-// @Description Get a list of all resumes
+// LatestResume godoc
+// @Summary Get latest resume
+// @Description Get the most recently created resume
 // @Tags resume
 // @Accept json
 // @Produce json
 // @Param Authorization header string true "API Key"
-// @Success 200 {array} models.Resume
-// @Router /api/v1/resume [get]
-func (h *ResumeHandler) ListResumes(c *gin.Context) {
-	var resumes []models.Resume
+// @Success 200 {object} models.Resume
+// @Router /api/v1/resume/latest [get]
+func (h *ResumeHandler) LatestResume(c *gin.Context) {
+	var resume models.Resume
 
-	if err := h.db.Find(&resumes).Error; err != nil {
+	if err := h.db.Order("id desc").First(&resume).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, resumes)
+	c.JSON(http.StatusOK, resume)
 }
 
 // GetSignedURL godoc

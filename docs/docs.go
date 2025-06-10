@@ -172,39 +172,6 @@ const docTemplate = `{
             }
         },
         "/api/v1/resume": {
-            "get": {
-                "description": "Get a list of all resumes",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "resume"
-                ],
-                "summary": "List all resumes",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "API Key",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Resume"
-                            }
-                        }
-                    }
-                }
-            },
             "post": {
                 "description": "Create a new resume by parsing a file through external service",
                 "consumes": [
@@ -283,6 +250,38 @@ const docTemplate = `{
                             "additionalProperties": {
                                 "type": "string"
                             }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/resume/latest": {
+            "get": {
+                "description": "Get the most recently created resume",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "resume"
+                ],
+                "summary": "Get latest resume",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "API Key",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Resume"
                         }
                     }
                 }

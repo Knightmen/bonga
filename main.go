@@ -78,7 +78,7 @@ func main() {
 		resumes := v1.Group("/resume")
 		resumes.Use(middleware.APIKeyAuth())
 		{
-			resumes.GET("", resumeHandler.ListResumes)
+			resumes.GET("/latest", resumeHandler.LatestResume)
 			resumes.GET("/getSignedUrl", resumeHandler.GetSignedURL)
 			resumes.POST("", resumeHandler.CreateResume)
 			resumes.GET("/:id", resumeHandler.GetResume)
