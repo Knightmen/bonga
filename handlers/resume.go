@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
 	"time"
 
@@ -58,7 +59,7 @@ func (h *ResumeHandler) CreateResume(c *gin.Context) {
 	}
 
 	// Make HTTP request to parse endpoint
-	parseURL := fmt.Sprintf("http://localhost:8000/resume/parse?fileName=%s", request.FileName)
+	parseURL := fmt.Sprintf("http://localhost:8000/resume/parse?fileName=%s", url.QueryEscape(request.FileName))
 	
 	httpReq, err := http.NewRequest("GET", parseURL, nil)
 	if err != nil {
