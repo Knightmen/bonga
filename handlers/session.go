@@ -1,6 +1,9 @@
 package handlers
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -64,11 +67,41 @@ func (h *SessionHandler) ChatSession(c *gin.Context) {
 		return
 	}
 
-	// Static/dummy response for now
+	// Prepare request body
+	reqBody := map[string]string{
+		"session_id": request.SessionID,
+		"message":   request.Question,
+	}
+	jsonBody, err := json.Marshal(reqBody)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create request"})
+		return
+	}
+	// Make POST request to chat endpoint
+	resp, err := http.Post("http://localhost:8000/session/chat", "application/json", bytes.NewBuffer(jsonBody))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to call chat API: %v", err)})
+		return
+	}
+	defer resp.Body.Close()
+
+	// Parse response
+	var chatResponse struct {
+		Answer    string `json:"answer"`
+		SessionID string `json:"session_id"`
+		Status    string `json:"status"`
+	}
+
+	if err := json.NewDecoder(resp.Body).Decode(&chatResponse); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse response"})
+		return
+	}
+
+	// Return chat response
 	response := SessionChatResponse{
-		SessionID: request.SessionID,
-		Answer:    "This is a dummy response to your question: " + request.Question,
+		SessionID: chatResponse.SessionID,
+		Answer:    chatResponse.Answer,
 	}
 
 	c.JSON(http.StatusOK, response)
-} 
+}
