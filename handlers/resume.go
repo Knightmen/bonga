@@ -90,6 +90,7 @@ func (h *ResumeHandler) CreateResume(c *gin.Context) {
 		Status       string `json:"status"`
 		FileName     string `json:"fileName"`
 		TextContent  string `json:"text_content"`
+		SessionId 	 string `json:"session_id"`
 	}
 	if err := json.Unmarshal(body, &parseResponse); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse response"})
@@ -98,19 +99,20 @@ func (h *ResumeHandler) CreateResume(c *gin.Context) {
 
 	// Create resume record in database
 	resume := models.Resume{
-		UserID:   "STATIC",
+		UserID:  parseResponse.SessionId,
 		RawText:  parseResponse.TextContent,
 		Metadata: models.JSONB{"fileName": parseResponse.FileName},
 	}
-
+	
 	if err := h.db.Create(&resume).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save resume to database"})
 		return
 	}
-
+	
 	// Return the response
 	c.JSON(resp.StatusCode, gin.H{
 		"status_code": resp.StatusCode,
+		"session_id": parseResponse.SessionId,
 	})
 }
 

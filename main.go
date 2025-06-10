@@ -60,6 +60,7 @@ func main() {
 	// Initialize handlers
 	productHandler := &handlers.ProductHandler{DB: db}
 	resumeHandler := handlers.NewResumeHandler(db)
+	sessionHandler := handlers.NewSessionHandler(db)
 
 	// Product routes
 	v1 := r.Group("/api/v1")
@@ -83,6 +84,14 @@ func main() {
 			resumes.GET("/:id", resumeHandler.GetResume)
 			resumes.PUT("/:id", resumeHandler.UpdateResume)
 			resumes.DELETE("/:id", resumeHandler.DeleteResume)
+		}
+
+		// Session routes with API key authentication
+		sessions := v1.Group("/session")
+		sessions.Use(middleware.APIKeyAuth())
+		{
+			sessions.GET("/init", sessionHandler.InitSession)
+			sessions.POST("/chat", sessionHandler.ChatSession)
 		}
 	}
 

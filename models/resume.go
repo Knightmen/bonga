@@ -7,12 +7,12 @@ import (
 )
 
 type Resume struct {
-	ID        uint		      `json:"id" gorm:"primaryKey" example:"1"`
-	UserID    string         `json:"user_id" gorm:"not null"`
-	RawText   string         `json:"raw_text" gorm:"type:text;not null"`
-	Metadata  JSONB          `json:"metadata" gorm:"type:jsonb"`
-	CreatedAt time.Time      `json:"created_at" gorm:"not null"`
-	UpdatedAt time.Time      `json:"updated_at" gorm:"not null"`
+	ID        uint      `json:"id" gorm:"primaryKey" example:"1"`
+	UserID    string    `json:"user_id" gorm:"not null"`
+	RawText   string    `json:"raw_text" gorm:"type:text;not null"`
+	Metadata  JSONB     `json:"metadata" gorm:"type:jsonb"`
+	CreatedAt time.Time `json:"created_at" gorm:"not null"`
+	UpdatedAt time.Time `json:"updated_at" gorm:"not null"`
 }
 
 type CreateResumeRequest struct {

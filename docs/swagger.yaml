@@ -1,5 +1,22 @@
 basePath: /
 definitions:
+  handlers.SessionChatRequest:
+    properties:
+      question:
+        type: string
+      sessionId:
+        type: string
+    required:
+    - question
+    - sessionId
+    type: object
+  handlers.SessionChatResponse:
+    properties:
+      answer:
+        type: string
+      sessionId:
+        type: string
+    type: object
   models.JSONB:
     additionalProperties: true
     type: object
@@ -319,6 +336,55 @@ paths:
       summary: Get a presigned URL for uploading a resume
       tags:
       - resume
+  /api/v1/session/chat:
+    post:
+      consumes:
+      - application/json
+      description: Send a question to a chat session and get an answer
+      parameters:
+      - description: API Key
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Chat Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.SessionChatRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SessionChatResponse'
+      summary: Chat with a session
+      tags:
+      - session
+  /api/v1/session/init:
+    get:
+      consumes:
+      - application/json
+      description: Initialize a new chat session
+      parameters:
+      - description: API Key
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Initialize a new session
+      tags:
+      - session
 schemes:
 - http
 swagger: "2.0"
